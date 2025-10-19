@@ -2,6 +2,7 @@ import React from "react";
 import Header from "./Header";
 import {
   getAllProducts,
+  getWeeklyProductData,
   lowStockProducts,
   productTotalAmount,
 } from "@/features/products/products-action";
@@ -13,6 +14,11 @@ import {
   CircleDot,
 } from "lucide-react";
 import DashboardCard from "@/components/dashboard/DashboardCard";
+import ProductChart, {
+  weeklyProductsData,
+} from "@/components/dashboard/ProductChart";
+import RecentProductsCard from "@/components/dashboard/RecentProductCard";
+import StockCard from "@/components/dashboard/StockCard";
 
 const Dashboard = async () => {
   const user = await getAuthUser();
@@ -23,6 +29,25 @@ const Dashboard = async () => {
       lowStockProducts(),
       productTotalAmount(),
     ]);
+
+  const weeklyProductsData: weeklyProductsData[] = await getWeeklyProductData(
+    products
+  );
+
+  const inStockCount =
+    products && products?.filter((p) => p.quantity > 5).length;
+  const outStockCount = products?.filter((p) => p.quantity == 0).length;
+
+  //
+  const inStockPercentage = Number(
+    ((inStockCount / totalProduct) * 100).toFixed(2)
+  );
+  const lowStockPercentage = Number(
+    ((lowStocks / totalProduct) * 100).toFixed(2)
+  );
+  const outStockPercentage = Number(
+    ((outStockCount / totalProduct) * 100).toFixed(2)
+  );
 
   return (
     <div className="flex-1 flex flex-col">
@@ -35,7 +60,8 @@ const Dashboard = async () => {
           </p>
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+        {/* Status Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h4 className="text-gray-600 font-medium">Total Amount</h4>
             <p className="text-3xl font-bold text-blue-600 mt-2 flex justify-between items-center">
@@ -63,51 +89,33 @@ const Dashboard = async () => {
               {lowStocks}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm sm:col-span-3 h-[300px]">
-            <h4 className="text-gray-600 font-medium">Active Sessions</h4>
-            <p className="text-3xl font-bold text-orange-600 mt-2">57</p>
+
+          {/* Instock Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm sm:col-span-1 min-h-[400px]">
+            <StockCard
+              inStockPercentage={inStockPercentage}
+              lowStockPercentage={lowStockPercentage}
+              outOfStockPercentage={outStockPercentage}
+            />
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm  min-h-[200px]">
-            <h4 className="text-gray-600 font-medium">Recent Products</h4>
-            <ul className="text-3xl font-bold text-green-600 mt-2">
-              {products &&
-                products
-                  ?.reverse()
-                  .slice(0, 5)
-                  .map((p) => {
-                    const stockLevel =
-                      p.quantity === 0 ? 0 : p.quantity <= 5 ? 1 : 2;
-                    return (
-                      <li className="text-sm my-2 " key={p.id}>
-                        <div className="flex justify-between items-center bg-amber-100/70 p-4 rounded-xl">
-                          <div className="space-x-3 flex ">
-                            <CircleDot
-                              className={`${
-                                stockLevel === 0
-                                  ? "text-red-500"
-                                  : stockLevel == 1
-                                  ? "text-yellow-500"
-                                  : "text-green-500"
-                              }`}
-                              size={20}
-                            />
-                            <p className="text-md">{p.name}</p>
-                          </div>
-                          <span>{p.quantity} unit</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-            </ul>
-          </div>{" "}
-          <div className="bg-white p-6 rounded-xl shadow-sm col-span-2 min-h-[400px] ">
-            <h4 className="text-gray-600 font-medium capitalize">
-              New Products Per Week
-            </h4>
-            <p className="text-3xl font-bold text-orange-600 mt-2">57</p>
+
+          {/* recent section */}
+          <RecentProductsCard products={products} />
+
+          {/* Chart section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm col-span-3 min-h-[400px] ">
+            <div className="flex flex-col justify-center gap-4">
+              <h4 className="text-gray-600 font-medium capitalize">
+                New Products Per Week
+              </h4>
+              <div className=" mt-10">
+                <ProductChart chartData={weeklyProductsData} />
+              </div>
+            </div>
           </div>
         </div>
-        {/*   */}
+
+        {/* sample card */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
           <DashboardCard title="test" icon={TrendingDown} value={22} />
           <DashboardCard
