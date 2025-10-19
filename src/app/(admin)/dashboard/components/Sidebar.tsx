@@ -2,7 +2,16 @@
 
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-import { Home, BarChart2, Users, Settings, LogOut, Menu } from "lucide-react";
+import {
+  Home,
+  BarChart2,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  Codesandbox,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 
 const SidebarComponent = () => {
@@ -11,10 +20,25 @@ const SidebarComponent = () => {
 
   const menus = [
     { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
-    { name: "Analytics", icon: <BarChart2 size={20} />, path: "/analytics" },
+    {
+      name: "Iventory",
+      icon: <Codesandbox size={20} />,
+      path: "/dashboard/inventory",
+    },
+    {
+      name: "Add Product",
+      icon: <Plus size={20} />,
+      path: "/dashboard/add-product",
+    },
+    {
+      name: "Analytics",
+      icon: <BarChart2 size={20} />,
+      path: "/dashboard/analytics",
+    },
     { name: "Users", icon: <Users size={20} />, path: "/dashboard/users" },
     { name: "Settings", icon: <Settings size={20} />, path: "/settings" },
   ];
+
   return (
     <React.Fragment>
       <div
