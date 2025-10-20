@@ -1,7 +1,9 @@
+"use client";
+
 import { deleteProductAction } from "@/features/products/products-action";
 import { Product } from "@/generated/prisma";
-import { Decimal } from "@prisma/client/runtime/library";
 import React from "react";
+import toast from "react-hot-toast";
 
 interface Props {
   products: Product[];
@@ -10,7 +12,7 @@ interface Props {
 const InventoryTable = ({ products }: Props) => {
   return (
     <React.Fragment>
-      <div className="overflow-x-auto mt-10">
+      <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white">
           <thead className="whitespace-nowrap">
             <tr>
@@ -215,9 +217,19 @@ const InventoryTable = ({ products }: Props) => {
                     <form>
                       <button
                         type="submit"
-                        formAction={async () =>
-                          await deleteProductAction(product?.id)
-                        }
+                        formAction={async () => {
+                          if (!confirm("are you sure")) {
+                            return;
+                          }
+                          const isSuccess = await deleteProductAction(
+                            product?.id
+                          );
+                          if (isSuccess) {
+                            toast.success("Inventory delete success", {
+                              duration: 3000,
+                            });
+                          }
+                        }}
                       >
                         ❌
                       </button>

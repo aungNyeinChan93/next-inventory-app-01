@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 
 export type Product = Prisma.ProductGetPayload<{}>
 
+// 
 export async function getAllProducts(user_id?: string): Promise<{ products: Product[], totalProduct: number }> {
     const products = await prisma.product.findMany({
         where: { user_id },
@@ -19,6 +20,7 @@ export async function getAllProducts(user_id?: string): Promise<{ products: Prod
     return { products, totalProduct }
 };
 
+// 
 export async function productTotalAmount(user_id?: string) {
     const products = await prisma.product.findMany({
         where: { user_id },
@@ -29,6 +31,7 @@ export async function productTotalAmount(user_id?: string) {
 };
 
 
+// 
 export async function lowStockProducts(user_id?: string) {
     const products = await prisma.product.count({
         where: {
@@ -80,5 +83,6 @@ export async function deleteProductAction(id: string) {
     }));
     if (isDelete) {
         revalidatePath('/dashboard/inventory')
+        return isDelete;
     }
 }
