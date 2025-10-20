@@ -3,6 +3,7 @@
 import { Prisma } from "@/generated/prisma"
 import { prisma } from "@/lib/prisma-client"
 import { product } from './../../../node_modules/effect/src/Equivalence';
+import { revalidatePath } from "next/cache";
 
 export type Product = Prisma.ProductGetPayload<{}>
 
@@ -69,4 +70,15 @@ export async function getWeeklyProductData(products: Product[]) {
         });
     }
     return weeklyProductsData;
+}
+
+
+
+export async function deleteProductAction(id: string) {
+    const isDelete = !!(await prisma.product.delete({
+        where: { id },
+    }));
+    if (isDelete) {
+        revalidatePath('/dashboard/inventory')
+    }
 }

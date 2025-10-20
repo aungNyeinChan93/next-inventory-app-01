@@ -49,11 +49,11 @@ const SidebarComponent = () => {
         <div>
           <div className="flex items-center justify-between mb-6 ">
             <h1
-              className={`text-lg font-bold text-blue-600 ${
+              className={`text-xl font-bold text-blue-600 ${
                 !isOpen && "hidden"
               }`}
             >
-              Next Inventory App
+              Inventory App
             </h1>
             <button
               onClick={() => setIsOpen(!isOpen)}
