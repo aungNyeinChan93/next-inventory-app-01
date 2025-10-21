@@ -28,7 +28,7 @@ const SidebarComponent = () => {
     {
       name: "Add Product",
       icon: <Plus size={20} />,
-      path: "/dashboard/add-product",
+      path: "/dashboard/inventory/create-inventory",
     },
     {
       name: "Analytics",

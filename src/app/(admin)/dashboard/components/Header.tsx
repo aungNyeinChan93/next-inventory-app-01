@@ -16,7 +16,7 @@ const Header = ({ name = "Dashboard" }: { name: string }) => {
             alt="avatar"
             className="w-10 h-10 rounded-full"
           /> */}
-          <UserButton showUserInfo />
+          <UserButton showUserInfo mockUser={{ displayName: "chan" }} />
         </div>
       </header>
     </React.Fragment>

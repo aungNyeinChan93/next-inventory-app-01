@@ -18,6 +18,7 @@ const InventoryPage = async ({ searchParams }: Props) => {
 
   const productsPromise = getAllInventory({ q, limit, page });
   const totalCount = await totalInventoryCount();
+
   return (
     <React.Fragment>
       <main className="p-6 w-full min-h-screen ">

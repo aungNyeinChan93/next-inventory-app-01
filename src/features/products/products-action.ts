@@ -2,8 +2,9 @@
 
 import { Prisma } from "@/generated/prisma"
 import { prisma } from "@/lib/prisma-client"
-import { product } from './../../../node_modules/effect/src/Equivalence';
 import { revalidatePath } from "next/cache";
+import { ProductSchema } from "@/lib/z-schemas/products-schema";
+import { getAuthUser } from "../auth/auth";
 
 export type Product = Prisma.ProductGetPayload<{}>
 
@@ -84,5 +85,44 @@ export async function deleteProductAction(id: string) {
     if (isDelete) {
         revalidatePath('/dashboard/inventory')
         return isDelete;
+    }
+}
+
+
+
+export async function createProductsAction(initialState: unknown, formData: FormData) {
+    const user = await getAuthUser();
+    const data = Object.fromEntries(formData.entries())
+
+    const { success, data: validateFields, error } = data && await ProductSchema.safeParseAsync({ ...data, user_id: user?.id! })
+
+    if (!success) {
+        return {
+            success, errors: {
+                name: error?.format().name?._errors,
+                price: error?.format().price?._errors,
+                quantity: error?.format().quantity?._errors,
+            }
+        }
+    };
+
+    try {
+        const result = await prisma.product.create({
+            data: {
+                // ...validateFields
+                name: validateFields.name,
+                price: Number(validateFields.price),
+                user_id: validateFields.user_id,
+                quantity: Number(validateFields.quantity),
+                sku: validateFields.sku,
+                lowStockAt: Number(validateFields.lowStockAt)
+            }
+        });
+
+        if (result !== null) {
+            return { success: true, message: `${result?.id} was successfully created!` }
+        }
+    } catch (error) {
+        return { success: false, errors: { other: error instanceof Error ? error?.message : "server error" } }
     }
 }
